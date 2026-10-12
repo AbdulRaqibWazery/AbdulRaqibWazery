@@ -1,0 +1,80 @@
+# XcodeGen spec – generate the Xcode project on a Mac with:
+#   brew install xcodegen && xcodegen generate
+name: ClipKeep
+
+options:
+  bundleIdPrefix: com.abdulwazery
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    # Your Apple ID team (Xcode → Settings → Accounts). Can also be picked in Xcode later.
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1"
+
+targets:
+  ClipKeep:
+    type: application
+    platform: iOS
+    sources:
+      - App
+      - Shared
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: ClipKeep
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    entitlements:
+      path: App/ClipKeep.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.abdulwazery.clipkeep
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.abdulwazery.clipkeep
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    dependencies:
+      - target: ClipKeepKeyboard
+
+  ClipKeepKeyboard:
+    type: app-extension
+    platform: iOS
+    sources:
+      - Keyboard
+      - Shared
+    info:
+      path: Keyboard/Info.plist
+      properties:
+        CFBundleDisplayName: ClipKeep
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).KeyboardViewController
+          NSExtensionAttributes:
+            IsASCIICapable: false
+            PrefersRightToLeft: false
+            PrimaryLanguage: de-DE
+            # Needed to read the shared App Group and the clipboard.
+            RequestsOpenAccess: true
+    entitlements:
+      path: Keyboard/ClipKeepKeyboard.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.abdulwazery.clipkeep
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.abdulwazery.clipkeep.keyboard
